@@ -13,7 +13,7 @@ function App() {
 
   // Fetch links from public/links.json on mount
   useEffect(() => {
-    fetch('/links.json')
+    fetch(`${import.meta.env.BASE_URL}links.json`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to load links data');
         return res.json();

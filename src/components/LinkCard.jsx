@@ -11,7 +11,7 @@ const LinkCard = ({ title, category, url, image, isFeatured }) => {
       <div className="link-content-wrapper">
         {image && (
           <img 
-            src={image} 
+            src={image.startsWith('http') ? image : `${import.meta.env.BASE_URL}${image.startsWith('/') ? image.substring(1) : image}`} 
             alt={title} 
             className="link-thumbnail" 
             loading="lazy"

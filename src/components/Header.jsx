@@ -57,7 +57,7 @@ const Header = () => {
     <header className="header">
       <div className="avatar-container">
         <img 
-          src="/logo.jpeg" 
+          src={`${import.meta.env.BASE_URL}logo.jpeg`} 
           alt="HighProduct Logo" 
           className="avatar" 
           onError={(e) => {
