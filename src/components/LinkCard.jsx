@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LinkCard = ({ title, category, url, isFeatured }) => {
+const LinkCard = ({ title, category, url, image, isFeatured }) => {
   return (
     <a 
       href={url} 
@@ -8,9 +8,23 @@ const LinkCard = ({ title, category, url, isFeatured }) => {
       rel="noopener noreferrer" 
       className={`link-card ${isFeatured ? 'featured' : ''}`}
     >
-      <div className="link-info">
-        <span className="link-category">{category}</span>
-        <h2 className="link-title">{title}</h2>
+      <div className="link-content-wrapper">
+        {image && (
+          <img 
+            src={image} 
+            alt={title} 
+            className="link-thumbnail" 
+            loading="lazy"
+            onError={(e) => {
+              // Hide image if it fails to load or doesn't exist
+              e.target.style.display = 'none';
+            }}
+          />
+        )}
+        <div className="link-info">
+          <span className="link-category">{category}</span>
+          <h2 className="link-title">{title}</h2>
+        </div>
       </div>
       <div className="link-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

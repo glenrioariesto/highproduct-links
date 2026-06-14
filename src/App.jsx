@@ -89,6 +89,7 @@ function App() {
               title={link.title}
               category={link.category}
               url={link.url}
+              image={link.image}
               isFeatured={link.isFeatured}
             />
           ))
