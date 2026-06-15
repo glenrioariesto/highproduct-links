@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import SearchBar from './components/SearchBar';
 import LinkCard from './components/LinkCard';
@@ -10,6 +10,39 @@ function App() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [categories, setCategories] = useState(['All']);
   const [loading, setLoading] = useState(true);
+
+  // Infinite Scroll state and ref
+  const [visibleCount, setVisibleCount] = useState(12);
+  const sentinelRef = useRef(null);
+
+  // Reset pagination count on search/category change
+  useEffect(() => {
+    setVisibleCount(12);
+  }, [searchVal, activeCategory]);
+
+  // Observer hook for infinite scrolling
+  useEffect(() => {
+    const currentSentinel = sentinelRef.current;
+    if (!currentSentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && visibleCount < filteredLinks.length) {
+          // Load 10 more items
+          setVisibleCount((prev) => Math.min(prev + 10, filteredLinks.length));
+        }
+      },
+      { rootMargin: '150px' } // Load 150px before reaching the bottom for seamless UX
+    );
+
+    observer.observe(currentSentinel);
+
+    return () => {
+      if (currentSentinel) {
+        observer.unobserve(currentSentinel);
+      }
+    };
+  }, [filteredLinks, visibleCount]);
 
   // Fetch links from public/links.json on mount
   useEffect(() => {
@@ -83,16 +116,26 @@ function App() {
         {loading ? (
           <div className="empty-state">Memuat data produk...</div>
         ) : filteredLinks.length > 0 ? (
-          filteredLinks.map((link) => (
-            <LinkCard
-              key={link.id}
-              title={link.title}
-              category={link.category}
-              url={link.url}
-              image={link.image}
-              isFeatured={link.isFeatured}
-            />
-          ))
+          <>
+            {filteredLinks.slice(0, visibleCount).map((link) => (
+              <LinkCard
+                key={link.id}
+                title={link.title}
+                category={link.category}
+                url={link.url}
+                image={link.image}
+                isFeatured={link.isFeatured}
+              />
+            ))}
+            
+            {/* Sentinel loader element for triggering Infinite Scroll */}
+            {visibleCount < filteredLinks.length && (
+              <div ref={sentinelRef} className="sentinel-loader">
+                <div className="subtle-spinner"></div>
+                <span>Memuat produk lainnya...</span>
+              </div>
+            )}
+          </>
         ) : (
           <div className="empty-state">
             Produk "{searchVal}" tidak ditemukan. Coba kata kunci lain.
